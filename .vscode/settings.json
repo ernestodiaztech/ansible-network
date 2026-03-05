@@ -1,0 +1,17 @@
+{
+    "python.defaultInterpreterPath": "/home/nesto/venvs/ansible-network/bin/python3",
+    "ansible.python.interpreterPath": "/home/nesto/venvs/ansible-network/bin/python3",
+    "ansible.validation.enabled": true,
+    "ansible.validation.lint.enabled": true,
+    "yaml.schemas": {
+        "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook": "playbooks/*.yml",
+        "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/tasks": "roles/*/tasks/*.yml"
+    },
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "[yaml]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.formatOnSave": true
+    }
+}
