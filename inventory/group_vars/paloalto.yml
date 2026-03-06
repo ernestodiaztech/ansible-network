@@ -1,5 +1,29 @@
 ---
+# =============================================================
+# Palo Alto PAN-OS — Connection and platform settings
+# PAN-OS uses HTTPS API, not SSH CLI
+# =============================================================
+
 ansible_network_os: paloaltonetworks.panos.panos
 ansible_connection: ansible.netcommon.httpapi
 ansible_httpapi_use_ssl: true
-ansible_httpapi_validate_certs: false
+ansible_httpapi_validate_certs: false    # Lab uses self-signed cert
+
+# PAN-OS API port
+ansible_port: 443
+
+# --- PAN-OS specific settings ---
+# Device group (for Panorama-managed devices — standalone for now)
+panos_device_group: "lab"
+
+# Vsys to target
+panos_vsys: "vsys1"
+
+# Backup settings
+backup_dir: backups/paloalto
+
+# Security zone names (referenced in security policy playbooks)
+zones:
+  untrust: "untrust"
+  trust: "trust"
+  dmz: "dmz"

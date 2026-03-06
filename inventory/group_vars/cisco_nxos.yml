@@ -1,3 +1,28 @@
 ---
+# =============================================================
+# Cisco NX-OS
+# =============================================================
+
 ansible_network_os: cisco.nxos.nxos
 ansible_connection: network_cli
+
+# NX-OS does not use enable mode
+ansible_become: false
+
+# --- NX-OS specific settings ---
+# Terminal width setting for NX-OS
+ansible_terminal_length: 0
+
+# --- NX-OS Features to ensure are enabled ---
+# These will be referenced in the NX-OS base config role
+nxos_features_required:
+  - bgp
+  - ospf
+  - interface-vlan
+  - lacp
+  - lldp
+  - vpc
+  - nxapi
+
+# --- Backup settings ---
+backup_dir: backups/cisco_nxos

@@ -1,0 +1,76 @@
+---
+# =============================================================
+# fw-01 — Palo Alto PAN-OS Firewall
+# Management IP: 172.16.0.10
+# Role: WAN edge firewall, security policy enforcement
+# =============================================================
+
+device_hostname: fw-01
+device_role: firewall
+device_vendor: paloalto
+device_platform: pan-os
+device_location: HQ-DC-Rack-A3
+device_serial: LAB-SERIAL-003
+
+ansible_host: 172.16.0.10
+
+# --- Security Zones ---
+security_zones:
+  - name: untrust
+    mode: layer3
+    interfaces:
+      - ethernet1/1    # To WAN-R1
+      - ethernet1/2    # To WAN-R2
+  - name: trust
+    mode: layer3
+    interfaces:
+      - ethernet1/3    # To SPINE-01
+      - ethernet1/4    # To SPINE-02
+  - name: mgmt
+    mode: layer3
+    interfaces: []
+
+# --- Interfaces ---
+interfaces:
+  ethernet1/1:
+    description: "Untrust | To WAN-R1"
+    ip: 10.10.10.2
+    mask: 255.255.255.252
+    zone: untrust
+  ethernet1/2:
+    description: "Untrust | To WAN-R2"
+    ip: 10.10.11.2
+    mask: 255.255.255.252
+    zone: untrust
+  ethernet1/3:
+    description: "Trust | To SPINE-01"
+    ip: 10.20.0.1
+    mask: 255.255.255.252
+    zone: trust
+  ethernet1/4:
+    description: "Trust | To SPINE-02"
+    ip: 10.20.0.5
+    mask: 255.255.255.252
+    zone: trust
+
+# --- Address Objects (used in security policies) ---
+address_objects:
+  - name: RFC1918-10
+    type: ip-netmask
+    value: 10.0.0.0/8
+  - name: RFC1918-172
+    type: ip-netmask
+    value: 172.16.0.0/12
+  - name: RFC1918-192
+    type: ip-netmask
+    value: 192.168.0.0/16
+  - name: DC-SERVERS
+    type: ip-netmask
+    value: 192.168.20.0/24
+
+# --- BGP ---
+bgp_as: 65200
+bgp_router_id: 10.255.0.10
+
+snmp_location: "HQ-DC-Rack-A3-U10"
+snmp_contact: "netops@lab.local"

@@ -1,0 +1,71 @@
+---
+# =============================================================
+# wan-r1 — Cisco IOS-XE WAN Router 1
+# Management IP: 172.16.0.11
+# Role: Primary WAN router, BGP to upstream ISP
+# =============================================================
+
+# --- Device Identity ---
+device_hostname: wan-r1
+device_role: wan_router
+device_vendor: cisco
+device_platform: ios-xe
+device_location: HQ-DC-Rack-A1
+device_serial: LAB-SERIAL-001   # Placeholder for lab
+
+# --- Management ---
+ansible_host: 172.16.0.11
+
+# --- Loopback Interface (Router ID, BGP peer address) ---
+loopback0:
+  ip: 10.255.0.1
+  mask: 255.255.255.255
+  description: "Loopback0 | Router-ID"
+
+# --- WAN Interface (connects to simulated ISP / FW) ---
+interfaces:
+  GigabitEthernet1:
+    description: "WAN | To FW-01 eth1"
+    ip: 10.10.10.1
+    mask: 255.255.255.252
+    state: up
+  GigabitEthernet2:
+    description: "WAN | To WAN-R2 (inter-router link)"
+    ip: 10.10.20.1
+    mask: 255.255.255.252
+    state: up
+
+# --- Routing ---
+ospf_router_id: 10.255.0.1
+ospf_area: 0
+ospf_interfaces:
+  - GigabitEthernet1
+  - GigabitEthernet2
+  - Loopback0
+
+bgp_as: 65100
+bgp_router_id: 10.255.0.1
+bgp_neighbors:
+  - neighbor_ip: 10.10.10.2    # fw-01 outside interface
+    remote_as: 65200
+    description: "eBGP to FW-01"
+
+# --- ACLs ---
+acls:
+  - name: MGMT_ACCESS
+    type: standard
+    entries:
+      - sequence: 10
+        action: permit
+        source: 172.16.0.0
+        wildcard: 0.0.0.255
+      - sequence: 20
+        action: deny
+        source: any
+
+# --- NTP (overrides global if needed) ---
+ntp_source_interface: Loopback0
+
+# --- SNMP ---
+snmp_location: "HQ-DC-Rack-A1-U12"
+snmp_contact: "netops@lab.local"

@@ -1,6 +1,24 @@
 ---
+# =============================================================
+# Cisco IOS / IOS-XE
+# =============================================================
+
 ansible_network_os: cisco.ios.ios
 ansible_connection: network_cli
+
+# Privilege escalation
 ansible_become: true
 ansible_become_method: enable
-ansible_become_password: ansible123
+ansible_become_password: "ansible123"
+
+# --- IOS-specific platform settings ---
+# SSH terminal width - prevent line wrapping in show commands
+ansible_terminal_length: 0
+
+# --- IOS Feature Flags ---
+# Whether this IOS device supports the newer Resource Module style
+# (IOS-XE 16.x+ supports declarative resource modules)
+ios_resource_modules_supported: true
+
+# --- Backup settings ---
+backup_dir: backups/cisco_ios

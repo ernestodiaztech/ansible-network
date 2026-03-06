@@ -1,0 +1,74 @@
+---
+# =============================================================
+# spine-01 — Cisco NX-OS Spine Switch 1
+# Management IP: 172.16.0.21
+# Role: DC spine, BGP route reflector, VXLAN VTEP
+# =============================================================
+
+device_hostname: spine-01
+device_role: spine
+device_vendor: cisco
+device_platform: nxos
+device_location: HQ-DC-Rack-B1
+device_serial: LAB-SERIAL-021
+
+ansible_host: 172.16.0.21
+
+# --- Loopback (Router-ID, BGP, VTEP) ---
+loopback0:
+  ip: 10.255.1.1
+  mask: 255.255.255.255
+  description: "Loopback0 | Router-ID"
+
+loopback1:
+  ip: 10.255.2.1
+  mask: 255.255.255.255
+  description: "Loopback1 | VTEP NVE source"
+
+# --- Fabric Interfaces (to leaf switches) ---
+interfaces:
+  Ethernet1/1:
+    description: "Fabric | To FW-01 eth3"
+    ip: 10.20.0.2
+    mask: 255.255.255.252
+    mtu: 9216
+    state: up
+  Ethernet1/2:
+    description: "Fabric | To SPINE-02 (inter-spine)"
+    ip: 10.20.1.1
+    mask: 255.255.255.252
+    mtu: 9216
+    state: up
+  Ethernet1/3:
+    description: "Fabric | To LEAF-01"
+    ip: 10.20.2.1
+    mask: 255.255.255.252
+    mtu: 9216
+    state: up
+  Ethernet1/4:
+    description: "Fabric | To LEAF-02"
+    ip: 10.20.3.1
+    mask: 255.255.255.252
+    mtu: 9216
+    state: up
+
+# --- BGP (eBGP spine-leaf model) ---
+bgp_as: 65000
+bgp_router_id: 10.255.1.1
+bgp_neighbors:
+  - neighbor_ip: 10.20.0.1      # fw-01
+    remote_as: 65200
+    description: "eBGP to FW-01"
+  - neighbor_ip: 10.20.2.2      # leaf-01
+    remote_as: 65001
+    description: "eBGP to LEAF-01"
+  - neighbor_ip: 10.20.3.2      # leaf-02
+    remote_as: 65002
+    description: "eBGP to LEAF-02"
+
+# --- NX-OS VPC Domain ---
+vpc_domain_id: 1
+vpc_peer_ip: 172.16.0.22    # spine-02 mgmt IP for keepalive
+
+snmp_location: "HQ-DC-Rack-B1-U20"
+snmp_contact: "netops@lab.local"

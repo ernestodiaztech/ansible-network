@@ -1,0 +1,17 @@
+---
+# =============================================================
+# WAN Group — Variables for WAN-facing routers
+# Inherits cisco_ios.yml variables automatically
+# =============================================================
+
+device_role: wan_router
+
+# BGP AS for WAN routers
+bgp_as: 65100
+
+# OSPF process ID for WAN routing
+ospf_process_id: 1
+ospf_area: 0
+
+# WAN interface naming convention
+wan_interface: GigabitEthernet1

@@ -1,0 +1,20 @@
+---
+# =============================================================
+# Spine Switches — DC spine layer specific variables
+# Inherits all cisco_nxos.yml variables automatically
+# =============================================================
+
+# Role identifier — used in templates and conditionals
+device_role: spine
+
+# BGP AS number for spine layer (used in BGP config templates)
+bgp_as: 65000
+
+# Spine-to-spine link subnet
+spine_interconnect_subnet: "10.0.0.0/30"
+
+# Loopback interface for BGP router-id and overlay
+loopback_interface: "Loopback0"
+
+# MTU for fabric links (jumbo frames for VXLAN)
+fabric_mtu: 9216

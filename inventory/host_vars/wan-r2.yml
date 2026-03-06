@@ -1,0 +1,49 @@
+---
+# =============================================================
+# wan-r2 — Cisco IOS-XE WAN Router 2
+# Management IP: 172.16.0.12
+# Role: Secondary WAN router, BGP redundancy
+# =============================================================
+
+device_hostname: wan-r2
+device_role: wan_router
+device_vendor: cisco
+device_platform: ios-xe
+device_location: HQ-DC-Rack-A2
+device_serial: LAB-SERIAL-002
+
+ansible_host: 172.16.0.12
+
+loopback0:
+  ip: 10.255.0.2
+  mask: 255.255.255.255
+  description: "Loopback0 | Router-ID"
+
+interfaces:
+  GigabitEthernet1:
+    description: "WAN | To FW-01 eth2"
+    ip: 10.10.11.1
+    mask: 255.255.255.252
+    state: up
+  GigabitEthernet2:
+    description: "WAN | To WAN-R1 (inter-router link)"
+    ip: 10.10.20.2
+    mask: 255.255.255.252
+    state: up
+
+ospf_router_id: 10.255.0.2
+ospf_area: 0
+ospf_interfaces:
+  - GigabitEthernet1
+  - GigabitEthernet2
+  - Loopback0
+
+bgp_as: 65100
+bgp_router_id: 10.255.0.2
+bgp_neighbors:
+  - neighbor_ip: 10.10.11.2    # fw-01 second outside interface
+    remote_as: 65200
+    description: "eBGP to FW-01"
+
+snmp_location: "HQ-DC-Rack-A2-U12"
+snmp_contact: "netops@lab.local"

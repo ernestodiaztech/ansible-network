@@ -1,0 +1,52 @@
+---
+# =============================================================
+# Netbox Dynamic Inventory Plugin Configuration
+# This file will be active once Netbox is set up in Part 26
+# For now, comment out the plugin line to prevent errors
+# =============================================================
+
+# Uncomment when Netbox is running:
+# plugin: netbox.netbox.nb_inventory
+
+plugin: netbox.netbox.nb_inventory
+
+# --- Netbox Connection ---
+api_endpoint: http://192.168.1.100:8000    # Replace with actual Netbox IP
+token: "{{ lookup('env', 'NETBOX_TOKEN') }}"    # Token from environment variable
+validate_certs: false                           # Lab — self-signed cert
+
+# --- What to pull from Netbox ---
+# Pull devices (not virtual machines) into the inventory
+compose:
+  ansible_host: primary_ip4.address | ipaddr('address')
+
+# --- Grouping ---
+# Create Ansible groups based on Netbox attributes
+group_by:
+  - device_roles
+  - platforms
+  - sites
+  - tags
+
+# --- Filters ---
+# Only pull active devices
+device_query_filters:
+  - status: active
+
+# Only pull devices that have a primary IP set
+# (devices without IPs can't be automated)
+filters:
+  has_primary_ip: true
+
+# --- Variable mapping ---
+# Map Netbox fields to Ansible variables
+compose:
+  ansible_network_os: >-
+    {
+      'cisco-ios-xe': 'cisco.ios.ios',
+      'cisco-nxos': 'cisco.nxos.nxos',
+      'panos': 'paloaltonetworks.panos.panos'
+    }[platform.slug] | default('unknown')
+  device_role: device_role.slug
+  site_name: site.name
+  rack: rack.name | default('unknown')

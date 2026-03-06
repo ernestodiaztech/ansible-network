@@ -1,4 +1,31 @@
 ---
-# Global settings applied to all devices
+# =============================================================
+# Global variables
+# =============================================================
+
+# --- Credentials ---
 ansible_user: ansible
-ansible_password: ansible123
+ansible_password: "ansible123"
+
+# --- NTP Servers ---
+ntp_servers:
+  - 216.239.35.0
+  - 216.239.35.4
+
+# --- DNS Servers ---
+dns_servers:
+  - 8.8.8.8
+  - 8.8.4.4
+
+# --- Syslog Server ---
+syslog_server: 172.16.0.100
+
+# --- Domain Name ---
+domain_name: lab.local
+
+# --- SNMP Community ---
+snmp_community_ro: "lab-read-only"
+
+# --- Default SSH timeout settings ---
+ansible_persistent_connect_timeout: 30
+ansible_command_timeout: 30

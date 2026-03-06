@@ -1,0 +1,31 @@
+---
+# =============================================================
+# Leaf Switches — DC leaf layer specific variables
+# Inherits all cisco_nxos.yml variables automatically
+# =============================================================
+
+device_role: leaf
+
+# BGP AS numbers for leaf layer (unique per leaf in eBGP spine-leaf)
+# Individual leaf AS numbers are defined in host_vars/
+
+# VLANs that all leaf switches should have
+base_vlans:
+  - id: 10
+    name: MGMT
+    subnet: "192.168.10.0/24"
+  - id: 20
+    name: APP_SERVERS
+    subnet: "192.168.20.0/24"
+  - id: 30
+    name: DB_SERVERS
+    subnet: "192.168.30.0/24"
+  - id: 99
+    name: NATIVE
+    subnet: ""
+
+# SVI (Layer 3 VLAN interface) settings
+svi_enabled: true
+
+# VPC domain settings (for dual-homed servers)
+vpc_keepalive_vlan: 4094
