@@ -1,0 +1,46 @@
+---
+leaf-01:
+    username: admin
+    password: admin
+    platform: cisco_cat9kv
+    hostname: 172.16.0.23
+leaf-02:
+    username: admin
+    password: admin
+    platform: cisco_cat9kv
+    hostname: 172.16.0.24
+wan-r1:
+    username: admin
+    password: admin
+    platform: cisco_csr1000v
+    hostname: 172.16.0.11
+wan-r2:
+    username: admin
+    password: admin
+    platform: cisco_csr1000v
+    hostname: 172.16.0.12
+spine-01:
+    username: admin
+    password: admin
+    platform: cisco_n9kv
+    hostname: 172.16.0.21
+spine-02:
+    username: admin
+    password: admin
+    platform: cisco_n9kv
+    hostname: 172.16.0.22
+host-01:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.16.0.31
+host-02:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.16.0.32
+fw-01:
+    username: admin
+    password: Admin@123
+    platform: paloalto_panos
+    hostname: 172.16.0.10

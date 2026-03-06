@@ -1,0 +1,4 @@
+---
+# Global settings applied to all devices
+ansible_user: ansible
+ansible_password: ansible123
