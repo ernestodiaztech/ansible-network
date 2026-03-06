@@ -1,0 +1,16 @@
+---
+profile: moderate  
+
+# Rules to skip
+skip_list:
+  - yaml[line-length]
+
+# Warn but don't fail on these rules
+warn_list:
+  - experimental
+
+# Exclude paths from linting
+exclude_paths:
+  - collections/
+  - .git/
+  - venvs/

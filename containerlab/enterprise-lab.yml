@@ -1,0 +1,119 @@
+---
+name: enterprise-lab
+
+mgmt:
+  network: mgmt-net           # Name of the Docker management network
+  ipv4-subnet: 172.16.0.0/24  # Management subnet for all devices
+
+topology:
+
+  defaults:
+    # Default credentials for all nodes
+    env:
+      USERNAME: ansible
+      PASSWORD: ansible123
+
+  nodes:
+
+    # =========================================================
+    # WAN ROUTERS — Cisco IOS-XE (CSR1000v)
+    # =========================================================
+    wan-r1:
+      kind: cisco_csr1000v
+      image: vrnetlab/cisco_csr1000v:17.03.08
+      mgmt-ipv4: 172.16.0.11
+      startup-config: configs/wan-r1-base.cfg
+
+    wan-r2:
+      kind: cisco_csr1000v
+      image: vrnetlab/cisco_csr1000v:17.03.08
+      mgmt-ipv4: 172.16.0.12
+      startup-config: configs/wan-r2-base.cfg
+
+    # =========================================================
+    # FIREWALL — Palo Alto PAN-OS
+    # =========================================================
+    fw-01:
+      kind: paloalto_panos
+      image: vrnetlab/paloalto_pa-vm:11.2.3
+      mgmt-ipv4: 172.16.0.10
+
+    # =========================================================
+    # SPINE SWITCHES — Cisco NX-OS (Nexus 9000v)
+    # =========================================================
+    spine-01:
+      kind: cisco_n9kv
+      image: vrnetlab/cisco_n9kv:9.3.9
+      mgmt-ipv4: 172.16.0.21
+      startup-config: configs/spine-01-base.cfg
+
+    spine-02:
+      kind: cisco_n9kv
+      image: vrnetlab/cisco_n9kv:9.3.9
+      mgmt-ipv4: 172.16.0.22
+      startup-config: configs/spine-02-base.cfg
+
+    # =========================================================
+    # LEAF SWITCHES — Cisco NX-OS (Nexus 9000v)
+    # =========================================================
+    leaf-01:
+      kind: cisco_cat9kv
+      image: vrnetlab/cisco_cat9kv:17.15.01
+      mgmt-ipv4: 172.16.0.23
+      startup-config: configs/leaf-01-base.cfg
+
+    leaf-02:
+      kind: cisco_cat9kv
+      image: vrnetlab/cisco_cat9kv:17.15.01
+      mgmt-ipv4: 172.16.0.24
+      startup-config: configs/leaf-02-base.cfg
+
+    # =========================================================
+    # LINUX HOSTS — Alpine Linux (lightweight)
+    # =========================================================
+    host-01:
+      kind: linux
+      image: alpine:latest
+      mgmt-ipv4: 172.16.0.31
+
+    host-02:
+      kind: linux
+      image: alpine:latest
+      mgmt-ipv4: 172.16.0.32
+
+  links:
+    # =========================================================
+    # WAN ROUTERS → FIREWALL
+    # WAN-R1 and WAN-R2 connect to FW-01's outside interfaces
+    # =========================================================
+    - endpoints: ["wan-r1:eth1", "fw-01:eth1"]    # WAN-R1 to FW outside-1
+    - endpoints: ["wan-r2:eth2", "fw-01:eth2"]    # WAN-R2 to FW outside-2
+
+    # WAN-R1 to WAN-R2 direct link (for BGP peering / WAN redundancy)
+    - endpoints: ["wan-r1:eth2", "wan-r2:eth1"]
+
+    # =========================================================
+    # FIREWALL → SPINE LAYER
+    # FW-01 inside interfaces connect to both spines (redundant)
+    # =========================================================
+    - endpoints: ["fw-01:eth3", "spine-01:eth1"]  # FW inside-1 to SPINE-01
+    - endpoints: ["fw-01:eth4", "spine-02:eth1"]  # FW inside-2 to SPINE-02
+
+    # =========================================================
+    # SPINE → SPINE (inter-spine link for routing)
+    # =========================================================
+    - endpoints: ["spine-01:eth2", "spine-02:eth2"]
+
+    # =========================================================
+    # SPINE → LEAF (full mesh — each leaf connects to both spines)
+    # =========================================================
+    - endpoints: ["spine-01:eth3", "leaf-01:eth1"]   # SPINE-01 to LEAF-01
+    - endpoints: ["spine-01:eth4", "leaf-02:eth1"]   # SPINE-01 to LEAF-02
+    - endpoints: ["spine-02:eth3", "leaf-01:eth2"]   # SPINE-02 to LEAF-01
+    - endpoints: ["spine-02:eth4", "leaf-02:eth2"]   # SPINE-02 to LEAF-02
+
+    # =========================================================
+    # LEAF → HOSTS (servers behind the leaf switches)
+    # =========================================================
+    - endpoints: ["leaf-01:eth3", "host-01:eth1"]    # LEAF-01 to HOST-01
+    - endpoints: ["leaf-02:eth3", "host-02:eth1"]    # LEAF-02 to HOST-02
